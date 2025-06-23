@@ -54,28 +54,46 @@ let rec files_ (path: string) (count: int) : FileTree =
 
     Dir(filename path, List.ofArray (Array.append subfiles subdirs))
 
-let files (path: string) : FileTree = files_ path 0
+let files (path: string) : FileTree option = Some(files_ path 0)
 
 // files "."
 // files "~"
 // files "~/Espruino"
 
-type Filter<'T> = 'T -> 'T option
-type Filter<'S, 'T> = 'S -> 'T -> 'T option
+type Filter<'T> = 'T option -> 'T option
+type Filter<'S, 'T> = 'S -> 'T option -> 'T option
 
-let rec fileEnds: Filter<string, FileTree> =
+/// file name ends with
+let rec ends: Filter<string, FileTree> =
+    fun s ot ->
+        match ot with
+        | None -> None
+        | Some t ->
+            match t with
+            | File name as f when name.EndsWith s -> Some f
+            | File _ -> None
+            | Dir(name, child) ->
+                child
+                |> List.choose (fun ft -> Some ft |> ends s)
+                |> function
+                    | [] -> None
+                    | filtered -> Some(Dir(name, filtered))
+
+/// select F# project files
+let fsproj: Filter<FileTree> = fun t -> t |> ends ".fsproj"
+
+/// files "." |> fsproj
+
+let rec contains: Filter<string, FileTree> =
     fun s t ->
         match t with
-        | File name as f when name.EndsWith s -> Some f
-        | File _ -> None
+        | File name as f -> if File.ReadAllText(name).Contains(s) then Some f else None
         | Dir(name, child) ->
             child
-            |> List.choose (fun ft -> ft |> fileEnds s)
+            |> List.choose (fun ft -> ft |> contains s)
             |> function
                 | [] -> None
                 | filtered -> Some(Dir(name, filtered))
 
-let fsproj: Filter<FileTree> = fun t -> t |> fileEnds ".fsproj"
-
 // files "." |> fsproj
-// files "~/Espruino" |> fileEnds ".py"
+// files "~/Espruino" |> fileEnds ".pyz" |> contains "JSVAR_CACHE_SIZE"
