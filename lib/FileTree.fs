@@ -5,7 +5,7 @@ open System.IO
 
 /// Tree structure representing the file system
 type FileTree =
-    | File of string
+    | File of string * string array
     | Dir of string * FileTree list
 
 /// full path -> name only
