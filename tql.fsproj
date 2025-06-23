@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- <OutputType>Exe</OutputType> -->
+    <OutputType>Library</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>fql</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="lib/tql.fs" /> <!-- Your F# source files in order -->
+  </ItemGroup>
+</Project>
