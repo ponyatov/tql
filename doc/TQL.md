@@ -17,6 +17,9 @@ github: https://github.com/ponyatov/tql
 4. **Query Language Engine**
     - A [[lang/DSL|DSL]] (Domain-Specific Language) to search/transform code/text (e.g., [[XPath]]-like queries for syntax trees).
     - [[lang/pattern matching|pattern matching]] (e.g., "find all `if` statements in Python files").
-5. **Storage Backend**
+5. **Visual Studio Code Extension**:
+    - Integrate with [[LSP]] (Language Server Protocol) for IDE-like queries.
+	- Syntax Highlighting for the [[TQL]] query language itself.
+6. **Storage Backend**
     - Persistent storage for parsed syntax trees (e.g., SQLite, JSON files).
     - Caching to avoid re-parsing unchanged files.

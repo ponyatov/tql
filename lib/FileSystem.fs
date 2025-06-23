@@ -1,5 +1,7 @@
 module FileSystem
 
-let rec traverseDir (query: Query) (dir: string) =
+let rec traverse (dir:string) =
     Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories)
-    |> Seq.filter (matchQuery query)
+// let rec traverseDir (query: Query) (dir: string) =
+//     
+//     |> Seq.filter (matchQuery query)
