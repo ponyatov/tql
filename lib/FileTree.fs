@@ -9,7 +9,7 @@ type FileTree =
     | Dir of string * FileTree list
 
 // /// A filter function that takes a file path and returns whether it matches some condition
-// type Filter = string -> bool
+type Filter<'T> = 'T -> bool
 
 /// full path -> name only
 let filename (fd: string) : string = Path.GetFileName(fd)
@@ -17,10 +17,11 @@ let filename (fd: string) : string = Path.GetFileName(fd)
 let newFile (f: string) : FileTree = File(filename (f))
 
 /// ignored files
-let ignoreFiles = fun f -> not (List.contains (filename (f)) [ ".gitignore" ])
+let ignoreFiles: Filter<string> =
+    fun f -> not (List.contains (filename (f)) [ ".gitignore" ])
 
 /// ignored dirs
-let ignoreDirs =
+let ignoreDirs: Filter<string> =
     fun d -> not (List.contains (filename (d)) [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
 
 
