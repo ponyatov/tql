@@ -3,16 +3,16 @@ module FileTree
 open System.IO
 
 /// Tree structure representing the file system
-type FileSystemTree =
+type FileTree =
     | File of string
-    | Dir of string * FileSystemTree list
+    | Dir of string * FileTree list
 
 /// ignored directories
 let ignoreFiles = [ ".gitignore" ]
 let ignoreDirs = [ ".git"; "bin"; "tmp"; "ref"; "obj" ]
 
 /// traverse file system forming tree from a given path
-let rec files (path: string) =
+let rec files (path: string) : FileTree =
 
     let subfiles =
         Directory.GetFiles(path)
