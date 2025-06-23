@@ -8,22 +8,18 @@ type FileTree =
     | File of string
     | Dir of string * FileTree list
 
-// /// A filter function that takes a file path and returns whether it matches some condition
-type Filter<'T> = 'T -> bool
-
 /// full path -> name only
 let filename (fd: string) : string = Path.GetFileName(fd)
 
 let newFile (f: string) : FileTree = File(filename (f))
 
 /// ignored files
-let ignoreFiles: Filter<string> =
-    fun f -> not (List.contains (filename (f)) [ ".gitignore" ])
+let ignoreFiles (f: string) : bool =
+    not (List.contains (filename (f)) [ ".gitignore" ])
 
 /// ignored dirs
-let ignoreDirs: Filter<string> =
-    fun d -> not (List.contains (filename (d)) [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
-
+let ignoreDirs (d: string) : bool =
+    not (List.contains (filename (d)) [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
 
 /// fix error with `~` in path
 let tilde (path: string) : string =
@@ -36,7 +32,6 @@ let tilde (path: string) : string =
             Path.Combine(home, path.Substring(2))
     else
         path
-
 
 /// dir depth limit
 let maxDepth = 15
@@ -65,17 +60,21 @@ let files (path: string) : FileTree = files_ path 0
 // files "~"
 // files "~/Espruino"
 
-/// filter F# projects (.xml)
-let fsproj: Filter = fun file -> file.EndsWith(".fsproj")
+type Filter<'T> = 'T -> 'T option
+type Filter<'T, 'A> = 'T -> 'A -> 'T option
 
-// Create a content filter looks into file
-let contentFilter (text: string) : Filter =
-    fun file ->
-        try
-            File.ReadAllText(file).Contains(text)
-        with _ ->
-            false
+let rec fileEnds: Filter<FileTree, string> =
+    fun t s ->
+        match t with
+        | File name as f when name.EndsWith s -> Some f
+        | File _ -> None
+        | Dir(name, child) ->
+            child
+            |> List.choose (fun ft -> fileEnds ft s)
+            |> function
+                | [] -> None
+                | filtered -> Some(Dir(name, filtered))
 
-// files "."
-// |> Seq.filter fsproj
-// |> Seq.filter (contentFilter "TQL")
+let fsproj: Filter<FileTree> = fun t -> fileEnds t ".fsproj"
+
+// files "." |> fsproj
