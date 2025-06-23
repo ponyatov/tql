@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="lib/TQL.fs" />
+    <Compile Include="lib/FileSystem.fs" />
     <Compile Include="lib/Storage.fs" />
   </ItemGroup>
 </Project>
