@@ -79,21 +79,32 @@ let rec ends: Filter<string, FileTree> =
                     | [] -> None
                     | filtered -> Some(Dir(name, filtered))
 
+// files "~/Espruino" |> ends ".py"
+
 /// select F# project files
 let fsproj: Filter<FileTree> = fun t -> t |> ends ".fsproj"
 
-/// files "." |> fsproj
-
-let rec contains: Filter<string, FileTree> =
-    fun s t ->
-        match t with
-        | File name as f -> if File.ReadAllText(name).Contains(s) then Some f else None
-        | Dir(name, child) ->
-            child
-            |> List.choose (fun ft -> ft |> contains s)
-            |> function
-                | [] -> None
-                | filtered -> Some(Dir(name, filtered))
-
 // files "." |> fsproj
+
+/// max file size to read
+let maxFileSize = 1024 * 1024
+
+/// filter files contains some string
+let rec contains: Filter<string, FileTree> =
+    fun s ot ->
+        match ot with
+        | None -> None
+        | Some t ->
+            match t with
+            | File name as f ->
+                if FileInfo(name).Length > maxFileSize then None
+                else if File.ReadAllText(name).Contains(s) then Some f
+                else None
+            | Dir(name, child) ->
+                child
+                |> List.choose (fun ft -> Some ft |> contains s)
+                |> function
+                    | [] -> None
+                    | filtered -> Some(Dir(name, filtered))
+
 // files "~/Espruino" |> fileEnds ".pyz" |> contains "JSVAR_CACHE_SIZE"
