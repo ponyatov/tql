@@ -5,11 +5,14 @@
 
 github: https://github.com/ponyatov/tql
 
-1. **File Tree Traversal**
+1. **[[FileTree]] Traversal**
     - Recursive directory scanning with filtering (e.g., by file extension).
     - Support for ignoring directories (e.g., `bin/`, `obj/`).
 2. **Multi-Language Syntax Parsing**
-    - Extensible parsers for different programming languages (e.g., F#, Python, JavaScript).
+    - Extensible parsers for different programming languages 
+	    - embedded: C/C++, Rust
+	    - project managements & sritps: GNU make, CMake, Python
+	    - self-analyzing: F#, JavaScript
     - Abstract Syntax Tree (AST) generation for queried files.
 3. **Modular Parser System**
     - Plugins for new languages (e.g., load parsers dynamically).
@@ -21,5 +24,5 @@ github: https://github.com/ponyatov/tql
     - Integrate with [[LSP]] (Language Server Protocol) for IDE-like queries.
 	- Syntax Highlighting for the [[TQL]] query language itself.
 6. **Storage Backend**
-    - Persistent storage for parsed syntax trees (e.g., SQLite, JSON files).
+    - Persistent storage for parsed syntax trees (e.g., [[LiteDB]], JSON files).
     - Caching to avoid re-parsing unchanged files.
