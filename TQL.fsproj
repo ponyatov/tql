@@ -3,7 +3,7 @@
     <!-- <OutputType>Exe</OutputType> -->
     <OutputType>Library</OutputType>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>fql</RootNamespace>
+    <RootNamespace>TQL</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
