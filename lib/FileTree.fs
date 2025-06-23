@@ -61,20 +61,21 @@ let files (path: string) : FileTree = files_ path 0
 // files "~/Espruino"
 
 type Filter<'T> = 'T -> 'T option
-type Filter<'T, 'A> = 'T -> 'A -> 'T option
+type Filter<'S, 'T> = 'S -> 'T -> 'T option
 
-let rec fileEnds: Filter<FileTree, string> =
-    fun t s ->
+let rec fileEnds: Filter<string, FileTree> =
+    fun s t ->
         match t with
         | File name as f when name.EndsWith s -> Some f
         | File _ -> None
         | Dir(name, child) ->
             child
-            |> List.choose (fun ft -> fileEnds ft s)
+            |> List.choose (fun ft -> ft |> fileEnds s)
             |> function
                 | [] -> None
                 | filtered -> Some(Dir(name, filtered))
 
-let fsproj: Filter<FileTree> = fun t -> fileEnds t ".fsproj"
+let fsproj: Filter<FileTree> = fun t -> t |> fileEnds ".fsproj"
 
 // files "." |> fsproj
+// files "~/Espruino" |> fileEnds ".py"
