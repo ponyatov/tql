@@ -10,3 +10,4 @@ include mk/rule.mk
 include mk/dotnet.mk
 include mk/install.mk
 include mk/merge.mk
+include mk/ai.mk

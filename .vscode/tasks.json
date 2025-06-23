@@ -28,6 +28,13 @@
             "problemMatcher" : []
         },
         {
+            "label"          : "make: ai",
+            "type"           : "shell",
+            "command"        : "make ai",
+            "problemMatcher" : [],
+            "group"          : {"kind": "build","isDefault": true}
+        },
+        {
             "label"          : "git: checkout .vscode",
             "type"           : "shell",
             "command"        : "git checkout .vscode/settings.json",
@@ -37,7 +44,7 @@
         {
             "label"          : "F#: fsi",
             "type"           : "shell",
-            "command"        : "fsi",
+            "command"        : "dotnet fsi",
             "problemMatcher" : [],
             "presentation"   : {"showReuseMessage": false, "focus": false, "reveal": "silent"},
             "group"          : {"kind": "build","isDefault": true}
@@ -47,7 +54,7 @@
             "type"           : "shell",
             "command"        : "dotnet build",
             "problemMatcher" : [],
-            "presentation"   : {"showReuseMessage": false, "focus": false, "reveal": "silent"},
+            "presentation"   : {"showReuseMessage": false, "focus": true, "reveal": "silent"},
             "group"          : {"kind": "build","isDefault": true}
         },
     ]
