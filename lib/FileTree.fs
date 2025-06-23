@@ -2,9 +2,33 @@ module FileTree
 
 open System.IO
 
-/// Traverse files without filtering (for use with piping)
-let files (path: string) =
-    Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+/// Tree structure representing the file system
+type FileSystemTree =
+    | File of string
+    | Dir of string * FileSystemTree list
+
+/// ignored directories
+let ignoreFiles = [ ".gitignore" ]
+let ignoreDirs = [ ".git"; "bin"; "tmp"; "ref"; "obj" ]
+
+/// traverse file system forming tree from a given path
+let rec files (path: string) =
+
+    let subfiles =
+        Directory.GetFiles(path)
+        |> Array.filter (fun d ->
+            let file = Path.GetFileName(d)
+            not (List.contains file ignoreFiles))
+        |> Array.map File
+
+    let subdirs =
+        Directory.GetDirectories(path)
+        |> Array.filter (fun d ->
+            let dirname = Path.GetFileName(d)
+            not (List.contains dirname ignoreDirs))
+        |> Array.map (fun d -> Dir(d, [ files d ]))
+
+    Dir(path, List.ofArray (Array.append subfiles subdirs))
 // files "."
 
 /// A filter function that takes a file path and returns whether it matches some condition
