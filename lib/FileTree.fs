@@ -16,19 +16,15 @@ let rec files (path: string) : FileTree =
 
     let subfiles =
         Directory.GetFiles(path)
-        |> Array.filter (fun d ->
-            let file = Path.GetFileName(d)
-            not (List.contains file ignoreFiles))
-        |> Array.map File
+        |> Array.filter (fun f -> not (List.contains (Path.GetFileName(f)) ignoreFiles))
+        |> Array.map (fun f -> File(Path.GetFileName(f)))
 
     let subdirs =
         Directory.GetDirectories(path)
-        |> Array.filter (fun d ->
-            let dirname = Path.GetFileName(d)
-            not (List.contains dirname ignoreDirs))
-        |> Array.map (fun d -> Dir(d, [ files d ]))
+        |> Array.filter (fun d -> not (List.contains (Path.GetFileName(d)) ignoreDirs))
+        |> Array.map (fun d -> files d)
 
-    Dir(path, List.ofArray (Array.append subfiles subdirs))
+    Dir(Path.GetFileName(path), List.ofArray (Array.append subfiles subdirs))
 // files "."
 
 /// A filter function that takes a file path and returns whether it matches some condition
