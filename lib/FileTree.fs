@@ -7,30 +7,33 @@ type FileTree =
     | File of string
     | Dir of string * FileTree list
 
-/// ignored directories
-let ignoreFiles = [ ".gitignore" ]
-let ignoreDirs = [ ".git"; "bin"; "tmp"; "ref"; "obj" ]
+/// A filter function that takes a file path and returns whether it matches some condition
+type Filter = string -> bool
+
+/// full path -> name only
+let filename (fd: string) : string = Path.GetFileName(fd)
+
+let newFile (f: string) : FileTree = File(filename (f))
+
+/// ignored files
+let ignoreFiles: Filter =
+    fun f -> not (List.contains (filename (f)) [ ".gitignore" ])
+
+/// ignored dirs
+let ignoreDirs: Filter =
+    fun d -> not (List.contains (filename (d)) [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
 
 /// traverse file system forming tree from a given path
 let rec files (path: string) : FileTree =
 
-    let name (fd: string) : string = Path.GetFileName(fd)
-
     let subfiles =
-        Directory.GetFiles(path)
-        |> Array.filter (fun f -> not (List.contains (name (f)) ignoreFiles))
-        |> Array.map (fun f -> File(name (f)))
+        Directory.GetFiles(path) |> Array.filter ignoreFiles |> Array.map newFile
 
     let subdirs =
-        Directory.GetDirectories(path)
-        |> Array.filter (fun d -> not (List.contains (name (d)) ignoreDirs))
-        |> Array.map (fun d -> files d)
+        Directory.GetDirectories(path) |> Array.filter ignoreDirs |> Array.map files
 
-    Dir(name (path), List.ofArray (Array.append subfiles subdirs))
+    Dir(filename path, List.ofArray (Array.append subfiles subdirs))
 // files "."
-
-/// A filter function that takes a file path and returns whether it matches some condition
-type Filter = string -> bool
 
 /// filter F# projects (.xml)
 let fsproj: Filter = fun file -> file.EndsWith(".fsproj")
