@@ -5,6 +5,18 @@
 
 github: https://github.com/ponyatov/tql
 
-- traversal of file trees
-	- with source code in arbitrary [[lang/programming language|programming languages]]
-- convenient tools for creating [[syntax/parser|syntax parsers]]
+1. **File Tree Traversal**
+    - Recursive directory scanning with filtering (e.g., by file extension).
+    - Support for ignoring directories (e.g., `bin/`, `obj/`).
+2. **Multi-Language Syntax Parsing**
+    - Extensible parsers for different programming languages (e.g., F#, Python, JavaScript).
+    - Abstract Syntax Tree (AST) generation for queried files.
+3. **Modular Parser System**
+    - Plugins for new languages (e.g., load parsers dynamically).
+    - Integration with existing parser libraries (e.g., `FSharp.Text.Lexing`, [[syntax/ANTLR|ANTLR]]).
+4. **Query Language Engine**
+    - A [[lang/DSL|DSL]] (Domain-Specific Language) to search/transform code/text (e.g., [[XPath]]-like queries for syntax trees).
+    - [[lang/pattern matching|pattern matching]] (e.g., "find all `if` statements in Python files").
+5. **Storage Backend**
+    - Persistent storage for parsed syntax trees (e.g., SQLite, JSON files).
+    - Caching to avoid re-parsing unchanged files.

@@ -28,7 +28,7 @@
             "problemMatcher" : []
         },
         {
-            "label"          : "make: ai",
+            "label"          : "AI: summary",
             "type"           : "shell",
             "command"        : "make ai",
             "problemMatcher" : [],
