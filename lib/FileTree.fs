@@ -14,17 +14,19 @@ let ignoreDirs = [ ".git"; "bin"; "tmp"; "ref"; "obj" ]
 /// traverse file system forming tree from a given path
 let rec files (path: string) : FileTree =
 
+    let name (fd: string) : string = Path.GetFileName(fd)
+
     let subfiles =
         Directory.GetFiles(path)
-        |> Array.filter (fun f -> not (List.contains (Path.GetFileName(f)) ignoreFiles))
-        |> Array.map (fun f -> File(Path.GetFileName(f)))
+        |> Array.filter (fun f -> not (List.contains (name (f)) ignoreFiles))
+        |> Array.map (fun f -> File(name (f)))
 
     let subdirs =
         Directory.GetDirectories(path)
-        |> Array.filter (fun d -> not (List.contains (Path.GetFileName(d)) ignoreDirs))
+        |> Array.filter (fun d -> not (List.contains (name (d)) ignoreDirs))
         |> Array.map (fun d -> files d)
 
-    Dir(Path.GetFileName(path), List.ofArray (Array.append subfiles subdirs))
+    Dir(name (path), List.ofArray (Array.append subfiles subdirs))
 // files "."
 
 /// A filter function that takes a file path and returns whether it matches some condition
