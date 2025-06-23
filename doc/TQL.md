@@ -26,3 +26,5 @@ github: https://github.com/ponyatov/tql
 6. **Storage Backend**
     - Persistent storage for parsed syntax trees (e.g., [[LiteDB]], JSON files).
     - Caching to avoid re-parsing unchanged files.
+
+## [[tql/bib]]
