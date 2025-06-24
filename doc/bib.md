@@ -13,3 +13,6 @@
 	- A comprehensive book on F# that includes advanced topics like recursive data structures and tree processing.
 	    
 	- Covers pattern matching on trees and functional algorithms.
+
+
+[[Evento]]

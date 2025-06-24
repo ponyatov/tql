@@ -5,21 +5,24 @@ open System.IO
 
 /// Tree structure representing the file system
 type FileTree =
-    | File of string * string array
-    | Dir of string * FileTree list
+    | File of name: string * path: string * lines: string list
+    | Dir of name: string * path: string * child: FileTree list
 
 /// full path -> name only
-let filename (fd: string) : string = Path.GetFileName(fd)
+// let name (path: string) : string = Path.GetFileName(path)
 
-let newFile (f: string) : FileTree = File(filename (f))
+/// build new empty file
+let newFile (path: string) : FileTree =
+    File(name = Path.GetFileName path, path = path, lines = [])
+// newFile "/tmp/rtf"
 
 /// ignored files
-let ignoreFiles (f: string) : bool =
-    not (List.contains (filename (f)) [ ".gitignore" ])
+let ignoreFiles (name: string) : bool =
+    not (List.contains name [ ".gitignore" ])
 
 /// ignored dirs
-let ignoreDirs (d: string) : bool =
-    not (List.contains (filename (d)) [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
+let ignoreDirs (name: string) : bool =
+    not (List.contains name [ ".git"; "bin"; "tmp"; "ref"; "obj" ])
 
 /// fix error with `~` in path
 let tilde (path: string) : string =
@@ -32,9 +35,13 @@ let tilde (path: string) : string =
             Path.Combine(home, path.Substring(2))
     else
         path
+// ["";"~";"~/";"~/tql";"/~/none"] |> List.map tilde
 
 /// dir depth limit
 let maxDepth = 15
+
+/// max file size to read
+let maxFileSize = 1024 * 1024
 
 /// traverse file system forming tree from a given path
 let rec files_ (path: string) (count: int) : FileTree =
@@ -52,7 +59,7 @@ let rec files_ (path: string) (count: int) : FileTree =
         |> Array.filter ignoreDirs
         |> Array.map (fun d -> files_ d (count + 1))
 
-    Dir(filename path, List.ofArray (Array.append subfiles subdirs))
+    Dir(name = Path.GetFileName path, path = path, child = List.ofArray (Array.append subfiles subdirs))
 
 let files (path: string) : FileTree option = Some(files_ path 0)
 
@@ -85,9 +92,6 @@ let rec ends: Filter<string, FileTree> =
 let fsproj: Filter<FileTree> = fun t -> t |> ends ".fsproj"
 
 // files "." |> fsproj
-
-/// max file size to read
-let maxFileSize = 1024 * 1024
 
 /// filter files contains some string
 let rec contains: Filter<string, FileTree> =
